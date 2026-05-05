@@ -17,17 +17,20 @@ Inference services leverage Machine Learning models to generate new content base
     [:octicons-arrow-right-24: LLM Inference API service][ref-inference-api]
 
 </div>
+
 <div class="grid cards" markdown>
 
--   :fontawesome-solid-layer-group: __Hybrid Kubernetes Namespaces__
+-   :fontawesome-solid-layer-group: __Custom Inference Service__
+
+    Designed for users who need to develop and operate ML-centric services (e.g., RAG) and use cases beyond LLMs.
 
     Internet-accessible Kubernetes namespaces backed by mixed hardware resources, combining Grace-Hopper GPU nodes with commodity CPU-only virtual machines.
-    Designed for users who need to develop and operate ML-centric services (e.g., RAG) and use cases beyond LLMs.
     Resource consumption is based on assigned CPU, GPU, memory, and storage.
 
     !!! under-construction
-        This service is not yet available.
+        This service is not yet available for early testing.
 
+<!-- removed because the name "blueprints for re-deployments" is ambiguous, and because we do not have any good internal documentation about this feature.
 -   :fontawesome-solid-layer-group: __Blueprints for re-deployments__ 
 
     Deployment-ready blueprints for re-creating the GPU Hybrid Namespaces model on segregated infrastructure where stronger privacy, confidentiality, or compliance controls are required.
@@ -35,5 +38,6 @@ Inference services leverage Machine Learning models to generate new content base
 
     !!! under-construction
         This service is not yet available.
+-->
 
 </div>

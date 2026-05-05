@@ -1,15 +1,23 @@
 [](){#ref-inference-api}
 # LLM Inference API Service
 
+[](){#ref-inference-api-beta}
 !!! under-construction "The LLM Inference API service is in beta"
-    This service is under development.
-    
-    * We are currently exploring the potential adoption of this service, as well as the business model to cover for its cost.
+    This service is under development, and is available by request to help CSCS build the service.
+    During the beta we want to understand the following:
+
+    * Single-site deployments vs. geo-redundant deployments for higher availability.
+    * Usage patterns (e.g. scale-to-zero on inactivity, vs. keep warm with a minimum replica count).
+    * Which models that should be offered, and under which conditions?
+    * The trade-off between existing capacity and future cost.
+    * What are the appropriate accounting metrics?
+
+    During the beta users should expect that:
+
     * Capacity and availability is limited. Downtimes and slowdowns are to be expected.
     * The models that are available can change over time.
     * Access to the Beta is upon invitation, without any cost.
-    * Carefully read the [objectives and limitations][ref-inference-api-beta] of the Beta below 
-    
+
     Please contact Pablo Fernandez at [`pablo.fernandez@cscs.ch`](mailto:pablo.fernandez@cscs.ch) if you are interested to participate in the Beta, describing your use case, relevant project or organizational context, and an estimate of your expected requirements including load, preferred models, and availability expectations.
 
 The LLM Inference API service provides Internet-accessible OpenAI/Anthropic-compatible inference endpoints backed by selected open-weight models (for example Apertus and other vetted models).
@@ -34,132 +42,90 @@ Usage of sensitive or personal data is not allowed. For privacy reasons, CSCS do
 
 * :material-cloud-check: **No infrastructure management**
 
-  No need to run GPUs, containers, autoscaling, or model servers yourself.
+  Let CSCS manage GPUs, containers, autoscaling, and model servers.
 
 * :material-shield-lock: **Sovereign and private**
 
-  Your data stays yours and is processed entirely within CSCS in Switzerland. Prompts and responses are not tracked.
+  Your data is yours and is processed entirely within CSCS in Switzerland.
+  Prompts and responses are not tracked.
 
 </div>
 
 [](){#ref-inference-api-quickstart}
 ## Quick Start
 
-Get your token from the [CSCS portal](https://portal.cscs.ch), then run:
+Before starting, you need an API token (see the the [access guide][ref-inference-api-access]).
+Once you have your token, it must be provided with every call to the API.
 
-```sh
-curl -X GET "https://ai-gateway.svc.cscs.ch/v1/models" \
-  -H "Authorization: Bearer <AUTHENTICATION_TOKEN>" \
-  -H "Content-Type: application/json"
-```
+!!! example "List available models"
+    ```console
+    $ curl -X GET "https://ai-gateway.svc.cscs.ch/v1/models" \
+      -H "Authorization: Bearer <AUTHENTICATION_TOKEN>" \
+      -H "Content-Type: application/json"
+    ```
 
-If the request succeeds, your access is active and you can start using available models.
+!!! example "Chat completion request"
+    ```console
+    $ curl -X POST "https://ai-gateway.svc.cscs.ch/v1/chat/completions" \
+      -H "Authorization: Bearer <AUTHENTICATION_TOKEN>" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "model": "apertus-70b-instruct",
+        "messages": [
+          {"role": "user", "content": "Explain gradient descent in one paragraph."}
+        ],
+        "temperature": 0.2
+      }'
+    ```
+
+!!! example "Claude Code CLI"
+    Example environment configuration to be set before starting a `claude` session.
+    ```console
+    $ export ANTHROPIC_API_KEY=<AUTHENTICATION_TOKEN>
+    $ export ANTHROPIC_BASE_URL=https://ai-gateway.svc.cscs.ch/v1
+    $ export ANTHROPIC_MODEL=apertus-70b-instruct
+    ```
 
 [](){#ref-inference-api-access}
 ## Access
 
 ### Request access
 
-Early usage of this service requires an invitation. If you would like to participate, please contact Pablo Fernandez ([`pablo.fernandez@cscs.ch`](mailto:pablo.fernandez@cscs.ch)) describing your use case, relevant project or organizational context, and an estimate of your expected requirements including load, preferred models, and availability expectations.
+Early usage of this service requires an invitation.
+If you would like to participate, please contact Pablo Fernandez ([`pablo.fernandez@cscs.ch`](mailto:pablo.fernandez@cscs.ch)) describing your use case, relevant project or organizational context, and an estimate of your expected requirements including load, preferred models, and availability expectations.
 
 ### Obtain your authentication token
 
 Approved projects are given an authentication token, which can be retrieved and managed through [project management portal][ref-account-waldur].
 
-!!! todo
-    Add a screenshot to see how to obtain the API key
-    <!-- Screenshot placeholder: portal page showing where to retrieve the token -->
+## API
 
-### Use the API
+The service is accessed through the gateway base URL `https://ai-gateway.svc.cscs.ch`.
 
-!!! todo
-    Provide a very short example of how to use the token with the API.
+With common API paths including:
 
-    Then provide a link to proper docs for the API
-
-Use the gateway base URL:
-
-```text
-https://ai-gateway.svc.cscs.ch
-```
-
-Common API paths include:
-
-```text
-/v1/models
-/v1/chat/completions
-/v1/embeddings
-```
-## Example use cases
-
-This section provides practical examples of how to use the API for common tasks.
-
-### List available models
-
-```sh
-curl -X GET "https://ai-gateway.svc.cscs.ch/v1/models" \
-  -H "Authorization: Bearer <AUTHENTICATION_TOKEN>" \
-  -H "Content-Type: application/json"
-```
+| path | purpose |
+| ---- | ------- |
+| `/v1/models`           | query available models |
+| `/v1/chat/completions` | chat completions |
+| `/v1/embeddings`       | get a vector representation of a given input |
 
 !!! todo
-    show example output
+    Describe API support.
+    If we provide both OpenAI and Anthropic APIs, is it sufficient to provide links to external documentation for these APIs, with notes about any differences?
 
-### Chat completion request
-
-```sh
-curl -X POST "https://ai-gateway.svc.cscs.ch/v1/chat/completions" \
-  -H "Authorization: Bearer <AUTHENTICATION_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "apertus-70b-instruct",
-    "messages": [
-      {"role": "user", "content": "Explain gradient descent in one paragraph."}
-    ],
-    "temperature": 0.2
-  }'
-```
-
-!!! todo
-    show example output
-
-### Claude Code CLI
-
-Example environment configuration to be set before starting a `claude` session.
-
-```sh
-export ANTHROPIC_API_KEY=<AUTHENTICATION_TOKEN>
-export ANTHROPIC_BASE_URL=https://ai-gateway.svc.cscs.ch/v1
-export ANTHROPIC_MODEL=apertus-70b-instruct
-```
-
-## Resource consumption and monitoring
-
-Token consumption can be observed using the API
-
-!!! todo
-    Add an example on how to use the API toget accounting info
-
+[](){#ref-inference-api-guides}
+## Guides
 
 ### Reducing consumption
 
 * longer prompts increase cost and latency
 * future costs may differentiate across models with different computational load
 
-[](){#ref-inference-api-beta}
-## Objectives of the Beta
+[](){#ref-inference-api-issues}
+## Known issues and limitations
 
-The goal of this Beta is to understand what is missing before having an operational service. We need answers to understand:
-
-* single-site deployments, vs. geo-redundant deployments for higher availability
-* understand usage patterns (e.g. scale-to-zero on inactivity, vs. keep warm with a minimum replica count)
-* what are the models that should be offered, under which conditions
-* what the balance is with the existing capacity and future cost.
-* what is the right accounting metric to be used
-
-### Known issues and limitations
-
-* project key management is still evolving; currently one key is issued per project and rotation requires contacting the team
-* detailed self-service telemetry is limited today
-* documentation and model-specific configuration transparency is improving
-* load balancing and other QoS needs to be understood
+* Project key management is still evolving; currently one key is issued per project and rotation requires contacting the team.
+* Detailed self-service telemetry is limited today.
+* Documentation and model-specific configuration transparency are work in progress.
+* Load balancing and other QoS need to be understood.
